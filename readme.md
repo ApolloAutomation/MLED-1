@@ -8,7 +8,8 @@ network "Apollo MLED-1 Hotspot" (browse to 4.3.2.1 once joined).
 - Support: [Apollo Automation Discord](https://dsc.gg/ApolloAutomation) and
   [wiki](https://wiki.apolloautomation.com/). Please don't send MLED-1 issues to the WLED project.
 - Licence: EUPL-1.2, same as WLED (see LICENSE and NOTICE).
-- Apollo changes: the commits after upstream tag v16.0.1; build env `apollo_mled1`.
+- Apollo changes: the difference between `main` and the most recently merged upstream
+  WLED release tag (currently v16.0.1); build env `apollo_mled1`.
 
 Huge thanks to the WLED maintainers and contributors. The original WLED readme follows.
 

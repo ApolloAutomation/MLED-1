@@ -49,10 +49,17 @@ matching source archive (EUPL-1.2 Art. 5) because the repo is still private.
 - AudioReactive: compiled in (inherited from esp32dev_8M). It links arduinoFFT (GPL-3.0).
   Drop it if the board has no microphone, or keep it and add the GPL written offer.
 - Release tag scheme: Home Assistant (python-wled) treats any tag containing "b" as a beta
-  and needs v<x.y.z> semver, so M-1's m1-bN style does not fit. package.json version must
-  match the tag.
-- WLED's in-device Auto update fetches through download.wled.me, which serves only wled/WLED
-  and its forks. Patch update.htm to Apollo's Pages, or hide the button.
+  and expects x.y.z (optional v prefix and -suffix), so M-1's m1-bN style does not fit.
+  The tag must equal the package.json version, and the OTA asset should be named
+  WLED_<ver>_Apollo_MLED-1.bin. Add a tag ruleset once the scheme is chosen.
+- WLED's in-device Auto update reads api.github.com releases for WLED_REPO (404 while the
+  repo is private) and downloads through download.wled.me, which appears to serve only the
+  wled/WLED fork network (probed 2026-11-13). Patch update.htm to Apollo's Pages, or hide
+  the button.
+- Pin the git-ref libraries inherited from upstream [env] lib_deps (QuickESPNow branch,
+  ESPAsyncWebServer tag, AsyncTCP range) to commit SHAs so upstream people cannot change
+  Apollo builds without a merge. CI's "Resolved libraries" step lists what was used.
+- Factory image from CI: add an esptool merge_bin step so full_install.bin comes from CI.
 - Captive portal: keep upstream behaviour (popup guides setup) or port M-1 D22.
 - apBehavior and a recommended AP password or settings PIN after setup.
 - mDNS prefix (needs M-1's WLED_MDNS_PREFIX patch) and PSRAM enablement.
