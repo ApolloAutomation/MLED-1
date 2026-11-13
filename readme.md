@@ -1,3 +1,19 @@
+# Apollo MLED-1 firmware
+
+Firmware for the Apollo Automation MLED-1 LED controller. It is a modified version of
+[WLED](https://github.com/wled/WLED) 16.0.1 and is not an official WLED release.
+Out of the box the LED data output is GPIO13 and the setup hotspot is the open
+network "Apollo MLED-1 Hotspot" (browse to 4.3.2.1 once joined).
+
+- Support: [Apollo Automation Discord](https://dsc.gg/ApolloAutomation) and
+  [wiki](https://wiki.apolloautomation.com/). Please don't send MLED-1 issues to the WLED project.
+- Licence: EUPL-1.2, same as WLED (see LICENSE and NOTICE).
+- Apollo changes: the commits after upstream tag v16.0.1; build env `apollo_mled1`.
+
+Huge thanks to the WLED maintainers and contributors. The original WLED readme follows.
+
+---
+
 <p align="center">
   <img src="/images/wled_logo_akemi.png">
   <a href="https://github.com/wled-dev/WLED/releases"><img src="https://img.shields.io/github/release/wled-dev/WLED.svg?style=flat-square"></a>
