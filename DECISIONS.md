@@ -52,6 +52,10 @@ optional-debug). Upstream maintainers can no longer change Apollo builds without
 On every upstream sync, diff the inherited list (`pio project config`) and re-pin.
 CI also merges the factory image (MLED-1_full_install.bin, bootloader 0x1000, partitions
 0x8000, boot_app0 0xe000, app 0x10000; DIO, 40m, 8MB) and uploads it with SHA256SUMS.txt.
+CI and local builds of the same commit are functionally identical but not byte-identical
+(CI firmware.bin for c3d61f7d is 176 bytes smaller: different build paths and tooling
+around the UI build). Record the SHA-256 of whichever image is actually flashed. The
+content-creator units carry app 02ab1d76... / full image 8efc1af6... (local build).
 
 ## Open decisions (before the first retail release)
 
