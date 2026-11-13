@@ -1,11 +1,12 @@
 Apollo MLED-1 firmware
 
-This is a modified version of WLED (https://github.com/wled/WLED), version 16.0.1,
-modified by Apollo Automation starting 2026-11-13. It is not an official WLED release.
+This is a modified version of WLED (https://github.com/wled/WLED), currently based on
+WLED 16.0.1, modified by Apollo Automation starting 2026-11-13. It is not an official
+WLED release.
 
-WLED is licensed under the European Union Public Licence v. 1.2 (EUPL-1.2); see LICENSE.
-Apollo's modifications are distributed under the same licence. All upstream copyright
+WLED is licensed under the European Union Public Licence v. 1.2 or later (EUPL); see
+LICENSE. Apollo's modifications are distributed under EUPL-1.2. All upstream copyright
 notices are retained. Third-party libraries keep their own licences.
 
-The Apollo changes are the commits on main after the upstream v16.0.1 tag
-(commit 29b389df).
+The Apollo changes are the difference between this repository's main branch and the most
+recently merged upstream WLED release tag (initially v16.0.1, commit 29b389df).
