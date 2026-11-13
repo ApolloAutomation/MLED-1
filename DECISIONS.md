@@ -9,6 +9,8 @@ ESP32-PICO-V3-02 (rev v3.1), 8MB embedded flash, 2MB embedded PSRAM, USB-UART br
 (port shows as /dev/cu.usbserial-*). Env `apollo_mled1` extends upstream `esp32dev_8M`
 (8MB layout tools/WLED_ESP32_8MB.csv, DIO flash). PSRAM is not enabled yet.
 Flash at 460800 baud or lower; 921600 fails on this bridge ("Packet content transfer stopped").
+Confirmed on hardware 2026-11-13: the full_install image flashes correctly at 460800 after a
+full erase. A Chrome tab using Web Serial can hold the port ("Resource busy"); close it first.
 
 ### MLED-D2. LED data pin GPIO13 via DATA_PINS
 `-D DATA_PINS=13` (guarded in cfg.cpp). LEDPIN no longer exists in 16.x and
@@ -42,6 +44,15 @@ First units were flashed from a local build whose firmware files (platformio.ini
 wled00/set.cpp) are identical to this repo's first Apollo commit. Recipients get the
 matching source archive (EUPL-1.2 Art. 5) because the repo is still private.
 
+### MLED-D8. Libraries pinned; factory image built in CI
+`[env:apollo_mled1]` restates the inherited esp32dev_8M lib_deps in the same order, with the
+three moving references pinned to what the first builds resolved: AnimatedGIF 1.4.7 (was
+^1.4.7), ESPAsyncWebServer 39b830c8 (was tag v2.4.2), QuickESPNow 2985a4a6 (was branch
+optional-debug). Upstream maintainers can no longer change Apollo builds without a merge.
+On every upstream sync, diff the inherited list (`pio project config`) and re-pin.
+CI also merges the factory image (MLED-1_full_install.bin, bootloader 0x1000, partitions
+0x8000, boot_app0 0xe000, app 0x10000; DIO, 40m, 8MB) and uploads it with SHA256SUMS.txt.
+
 ## Open decisions (before the first retail release)
 
 - LED defaults: LED type, colour order, default pixel count, and ABL milliamps from the PSU
@@ -56,10 +67,6 @@ matching source archive (EUPL-1.2 Art. 5) because the repo is still private.
   repo is private) and downloads through download.wled.me, which appears to serve only the
   wled/WLED fork network (probed 2026-11-13). Patch update.htm to Apollo's Pages, or hide
   the button.
-- Pin the git-ref libraries inherited from upstream [env] lib_deps (QuickESPNow branch,
-  ESPAsyncWebServer tag, AsyncTCP range) to commit SHAs so upstream people cannot change
-  Apollo builds without a merge. CI's "Resolved libraries" step lists what was used.
-- Factory image from CI: add an esptool merge_bin step so full_install.bin comes from CI.
 - Captive portal: keep upstream behaviour (popup guides setup) or port M-1 D22.
 - apBehavior and a recommended AP password or settings PIN after setup.
 - mDNS prefix (needs M-1's WLED_MDNS_PREFIX patch) and PSRAM enablement.

@@ -50,6 +50,8 @@ AGENTS.md and .github/copilot-instructions.md.
   (nightly, release, stale, CI). They burn private-repo Actions minutes, and release.yml
   fires on any tag push.
 - On every sync, update the WLED version in NOTICE and the README header.
+- On every sync, diff esp32dev_8M's inherited lib_deps against the pinned list in
+  `[env:apollo_mled1]` and re-pin anything upstream changed (DECISIONS MLED-D8).
 - Never rebase or force-push `main`.
 
 ## Building and shipping

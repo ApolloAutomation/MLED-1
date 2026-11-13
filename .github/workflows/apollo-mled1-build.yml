@@ -41,11 +41,23 @@ jobs:
           fi
       - name: Resolved libraries
         run: pio pkg list -e apollo_mled1
+      # Factory image: flash at 0x0 after full erase
+      - name: Merge factory image
+        run: |
+          b=.pio/build/apollo_mled1
+          boot_app0="$HOME/.platformio/packages/framework-arduinoespressif32/tools/partitions/boot_app0.bin"
+          test -f "$boot_app0"
+          python "$HOME/.platformio/packages/tool-esptoolpy/esptool.py" --chip esp32 merge_bin \
+            -o "$b/MLED-1_full_install.bin" --flash_mode dio --flash_freq 40m --flash_size 8MB \
+            0x1000 "$b/bootloader.bin" 0x8000 "$b/partitions.bin" 0xe000 "$boot_app0" 0x10000 "$b/firmware.bin"
+          (cd "$b" && sha256sum MLED-1_full_install.bin firmware.bin | tee SHA256SUMS.txt)
       - uses: actions/upload-artifact@v7
         with:
           name: apollo_mled1-${{ github.sha }}
           retention-days: 90
           path: |
+            .pio/build/apollo_mled1/MLED-1_full_install.bin
+            .pio/build/apollo_mled1/SHA256SUMS.txt
             .pio/build/apollo_mled1/firmware.bin
             .pio/build/apollo_mled1/firmware.elf
             .pio/build/apollo_mled1/firmware.map
