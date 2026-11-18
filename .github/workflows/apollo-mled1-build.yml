@@ -61,7 +61,8 @@ jobs:
           b=.pio/build/apollo_mled1
           ota="WLED_$(jq -r .version package.json)_Apollo_MLED-1.bin"
           cp "$b/firmware.bin" "$b/$ota"
-          (cd "$b" && sha256sum MLED-1_full_install.bin "$ota" firmware.bin | tee SHA256SUMS.txt)
+          # Only release assets; firmware.bin equals the OTA bin
+          (cd "$b" && sha256sum MLED-1_full_install.bin "$ota" | tee SHA256SUMS.txt)
       - uses: actions/upload-artifact@v7
         with:
           name: apollo_mled1-${{ github.sha }}
