@@ -62,20 +62,51 @@ CI and local builds of the same commit are functionally identical but not byte-i
 around the UI build). Record the SHA-256 of whichever image is actually flashed. The
 content-creator units carry app 02ab1d76... / full image 8efc1af6... (local build).
 
+### MLED-D9. Release tags: v + package.json version, released by CI
+A release tag is `v` plus the package.json version at the tagged commit, for example
+`v16.0.1` for the first release on WLED 16.0.1. This is what Home Assistant (python-wled)
+and the in-device update page expect: x.y.z with an optional v prefix and no "b" (read as
+a beta), and update.htm looks for an asset ending `_<tag without v>_<release name>.bin`.
+The OTA asset is therefore `WLED_<version>_Apollo_MLED-1.bin` (output_bins.py names it
+the same way). Apollo tags share names with upstream tags (upstream's are kept under
+refs/remotes/wled-tags/, see CLAUDE.md), so always say "Apollo v16.0.1" or give the ref.
+Pushing the tag runs apollo-mled1-build.yml: it builds, checks that the tag equals the
+package.json version, has no "b" and points at a commit on main, then creates the GitHub
+release with MLED-1_full_install.bin, the OTA bin and SHA256SUMS.txt, and deploys Pages
+in the same run (a release created with GITHUB_TOKEN does not start other workflows).
+Releasing again on the same WLED base needs a package.json version bump first; its form
+(for example a -N suffix) must be checked against Home Assistant's and update.htm's
+version comparison before first use.
+
+### MLED-D10. Web installer on the repo's GitHub Pages
+apollo-mled1-pages.yml publishes https://apolloautomation.github.io/MLED-1/: index.html
+(apollo/installer/index.html), firmware/manifest.json (apollo/installer/manifest.json with
+"version" set from the tag) and firmware/MLED-1_full_install.bin downloaded from the
+release and checked against its SHA256SUMS.txt, plus NOTICE.txt and LICENSE.txt. The page
+links the source tree at the release tag (EUPL-1.2 Art. 5). Page and manifest are taken
+from the tagged commit, so a redeploy reproduces that release. The manifest is for
+esp-web-tools 10.x: one ESP32 build, the merged image at offset 0,
+new_install_prompt_erase true (as on M-1, so owners can keep settings; factory flashing
+still erases fully), home_assistant_domain wled. Improv over serial is compiled in
+(improv.cpp, WLED_ENABLE_ADALIGHT), so the installer offers Wi-Fi setup after flashing.
+esp-web-tools flashes at 115200 baud, inside MLED-D1's 460800 limit.
+One-time setup (repo admin): Pages source "GitHub Actions"; the github-pages environment
+must allow tags matching `v*` as well as main; a tag ruleset on `v*` (no deletion,
+no updates). Manual redeploy:
+`gh workflow run apollo-mled1-pages.yml -R ApolloAutomation/MLED-1 --ref main -f tag=v16.0.1`
+
 ## Open decisions (before the first retail release)
 
 - LED defaults: LED type, colour order, default pixel count, and ABL milliamps from the PSU
   rating (currently stock: WS2812B, 30 LEDs, 850 mA).
 - AudioReactive: compiled in (inherited from esp32dev_8M). It links arduinoFFT (GPL-3.0).
   Drop it if the board has no microphone, or keep it and add the GPL written offer.
-- Release tag scheme: Home Assistant (python-wled) treats any tag containing "b" as a beta
-  and expects x.y.z (optional v prefix and -suffix), so M-1's m1-bN style does not fit.
-  The tag must equal the package.json version, and the OTA asset should be named
-  WLED_<ver>_Apollo_MLED-1.bin. Add a tag ruleset once the scheme is chosen.
+- Version form for a second release on the same WLED base (MLED-D9).
 - WLED's in-device Auto update reads api.github.com releases for WLED_REPO (404 while the
   repo is private) and downloads through download.wled.me, which appears to serve only the
   wled/WLED fork network (probed 2026-11-13). Patch update.htm to Apollo's Pages, or hide
-  the button.
+  the button. Release assets now match the name it looks for (MLED-D9); the
+  download.wled.me rewrite is what still blocks it.
 - Captive portal: keep upstream behaviour (popup guides setup) or port M-1 D22.
 - apBehavior and a recommended AP password or settings PIN after setup.
 - mDNS prefix (needs M-1's WLED_MDNS_PREFIX patch) and PSRAM enablement.
@@ -84,5 +115,5 @@ content-creator units carry app 02ab1d76... / full image 8efc1af6... (local buil
   Timezone library (CC BY-SA 3.0) licence question for counsel.
 - Factory QC script: read /json/cfg and assert pin 13, SSID and open AP without saving
   settings; log MAC, firmware SHA-256 and result per unit.
-- Launch: make repo public, Pages manifest, installer devices.json entry, FlashScripts
-  pinned URL, Firmware Vault archive per release.
+- Launch: make repo public, one-time Pages setup (MLED-D10), first release tag, installer
+  devices.json entry, FlashScripts pinned URL, Firmware Vault archive per release.

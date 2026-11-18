@@ -1,0 +1,14 @@
+{
+  "name": "Apollo MLED-1",
+  "version": "16.0.1",
+  "home_assistant_domain": "wled",
+  "new_install_prompt_erase": true,
+  "builds": [
+    {
+      "chipFamily": "ESP32",
+      "parts": [
+        { "path": "MLED-1_full_install.bin", "offset": 0 }
+      ]
+    }
+  ]
+}

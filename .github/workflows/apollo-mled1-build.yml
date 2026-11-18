@@ -1,9 +1,13 @@
 name: Apollo MLED-1 build
 
 # Builds the apollo_mled1 env on main and PRs into it.
+# A v<package.json version> tag also publishes the release and the web installer
+# (DECISIONS MLED-D9). Releases made with GITHUB_TOKEN start no other workflows,
+# so Pages is deployed from this same run.
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -13,7 +17,8 @@ permissions:
 
 concurrency:
   group: apollo-mled1-build-${{ github.ref }}
-  cancel-in-progress: true
+  # Never cancel a release run
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
 
 jobs:
   build:
@@ -50,16 +55,85 @@ jobs:
           python "$HOME/.platformio/packages/tool-esptoolpy/esptool.py" --chip esp32 merge_bin \
             -o "$b/MLED-1_full_install.bin" --flash_mode dio --flash_freq 40m --flash_size 8MB \
             0x1000 "$b/bootloader.bin" 0x8000 "$b/partitions.bin" 0xe000 "$boot_app0" 0x10000 "$b/firmware.bin"
-          (cd "$b" && sha256sum MLED-1_full_install.bin firmware.bin | tee SHA256SUMS.txt)
+      # OTA asset name the in-device update page looks for
+      - name: OTA image and checksums
+        run: |
+          b=.pio/build/apollo_mled1
+          ota="WLED_$(jq -r .version package.json)_Apollo_MLED-1.bin"
+          cp "$b/firmware.bin" "$b/$ota"
+          # Only release assets; firmware.bin equals the OTA bin
+          (cd "$b" && sha256sum MLED-1_full_install.bin "$ota" | tee SHA256SUMS.txt)
       - uses: actions/upload-artifact@v7
         with:
           name: apollo_mled1-${{ github.sha }}
           retention-days: 90
           path: |
             .pio/build/apollo_mled1/MLED-1_full_install.bin
+            .pio/build/apollo_mled1/WLED_*_Apollo_MLED-1.bin
             .pio/build/apollo_mled1/SHA256SUMS.txt
             .pio/build/apollo_mled1/firmware.bin
             .pio/build/apollo_mled1/firmware.elf
             .pio/build/apollo_mled1/firmware.map
             .pio/build/apollo_mled1/bootloader.bin
             .pio/build/apollo_mled1/partitions.bin
+
+  release:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Check tag, version and branch
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="$(jq -r .version package.json)"
+          if [ "$TAG" != "v$version" ]; then
+            echo "tag $TAG does not match package.json version $version (expected v$version)"; exit 1
+          fi
+          case "$version" in *b*) echo "version $version contains 'b' (Home Assistant reads it as a beta)"; exit 1 ;; esac
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "tag $TAG points at $GITHUB_SHA, which is not on main"; exit 1
+          fi
+      - uses: actions/download-artifact@v7
+        with:
+          name: apollo_mled1-${{ github.sha }}
+          path: out
+      - name: Verify checksums
+        run: cd out && sha256sum -c SHA256SUMS.txt
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="${TAG#v}"
+          ota="WLED_${version}_Apollo_MLED-1.bin"
+          {
+            echo "Apollo MLED-1 firmware $version, built by CI from $GITHUB_SHA."
+            echo
+            echo "- \`MLED-1_full_install.bin\`: full image, flash at 0x0 (web installer: https://apolloautomation.github.io/MLED-1/)"
+            echo "- \`$ota\`: app only, for the WLED update page"
+            echo
+            echo "A modified version of WLED, licensed EUPL-1.2. Source: https://github.com/$GITHUB_REPOSITORY/tree/$TAG (see NOTICE)."
+            echo
+            echo '```'
+            cat out/SHA256SUMS.txt
+            echo '```'
+          } > notes.md
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --verify-tag \
+            --title "Apollo MLED-1 firmware $version" --notes-file notes.md \
+            out/MLED-1_full_install.bin "out/$ota" out/SHA256SUMS.txt
+
+  pages:
+    needs: release
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/apollo-mled1-pages.yml
+    with:
+      tag: ${{ github.ref_name }}

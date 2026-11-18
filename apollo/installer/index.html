@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Apollo MLED-1 Installer</title>
+    <meta name="description" content="Install Apollo MLED-1 firmware from the browser." />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="color-scheme" content="dark light" />
+    <style>
+      body {
+        font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
+        margin: 0;
+        line-height: 1.4;
+      }
+      .content {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 12px 16px;
+      }
+      .install {
+        text-align: center;
+        margin: 24px 0;
+      }
+      a {
+        color: #03a9f4;
+      }
+      .footer {
+        margin-top: 24px;
+        border-top: 1px solid #ccc;
+        padding-top: 24px;
+        font-size: 0.9em;
+        text-align: center;
+      }
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #333;
+          color: #fff;
+        }
+        a {
+          color: #58a6ff;
+        }
+      }
+    </style>
+    <script type="module" src="https://unpkg.com/esp-web-tools@10.2.1/dist/web/install-button.js?module"></script>
+  </head>
+  <body>
+    <div class="content">
+      <h1>Apollo MLED-1 Installer</h1>
+      <p>
+        Connect the MLED-1 to this computer with a USB cable, then press Install.
+        This needs a browser with Web Serial, such as Chrome or Edge.
+      </p>
+      <div class="install">
+        <p>MLED-1 firmware @VERSION@</p>
+        <esp-web-install-button manifest="./firmware/manifest.json"></esp-web-install-button>
+      </div>
+      <h2>After installing</h2>
+      <p>
+        The installer can connect the MLED-1 to Wi-Fi straight away over USB.
+        If you skip that, join the open Wi-Fi network <b>Apollo MLED-1 Hotspot</b>
+        and browse to <b>4.3.2.1</b> to set it up.
+      </p>
+      <p>
+        Help: <a href="https://wiki.apolloautomation.com/">Apollo Automation wiki</a> and
+        <a href="https://dsc.gg/ApolloAutomation">Discord</a>.
+      </p>
+      <div class="footer">
+        <p>
+          This firmware is a modified version of <a href="https://github.com/wled/WLED">WLED</a>
+          and is not an official WLED release. It is licensed under the
+          <a href="LICENSE.txt">EUPL-1.2</a>; see <a href="NOTICE.txt">NOTICE</a>.
+        </p>
+        <p>
+          Source code for this build:
+          <a href="https://github.com/ApolloAutomation/MLED-1/tree/@TAG@">ApolloAutomation/MLED-1 @TAG@</a>
+          (<a href="https://github.com/ApolloAutomation/MLED-1/releases/tag/@TAG@">release</a>).
+          Installer powered by <a href="https://esphome.github.io/esp-web-tools/">ESP Web Tools</a>.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

@@ -10,6 +10,12 @@ network "Apollo MLED-1 Hotspot" (browse to 4.3.2.1 once joined).
 - Licence: EUPL-1.2, same as WLED (see LICENSE and NOTICE).
 - Apollo changes: the difference between `main` and the most recently merged upstream
   WLED release tag (currently v16.0.1); build env `apollo_mled1`.
+- Install and releases: flash from the browser at
+  [apolloautomation.github.io/MLED-1](https://apolloautomation.github.io/MLED-1/), or take
+  `MLED-1_full_install.bin` (offset 0x0) or the OTA bin from
+  [Releases](https://github.com/ApolloAutomation/MLED-1/releases). Pushing a tag `v<version>`
+  (the package.json version) builds the release and updates the web installer; see
+  DECISIONS.md MLED-D9 and MLED-D10.
 
 Huge thanks to the WLED maintainers and contributors. The original WLED readme follows.
 
