@@ -7,11 +7,12 @@ AGENTS.md and .github/copilot-instructions.md.
 
 ## Never touch upstream WLED
 
-- Never push to, open pull requests or issues against, or comment on wled/WLED (formerly
-  Aircoookie/WLED). Nothing goes upstream.
-- This repository is NOT a GitHub fork (GitHub does not allow a private fork of a public
-  repo). It is a standalone repo seeded with upstream history up to the v16.0.1 tag, so
-  upstream cannot see it and it never appears in wled/WLED's fork network.
+- AI agents and automation never push to, open pull requests or issues against, or comment
+  on wled/WLED (formerly Aircoookie/WLED). Upstream contributions are a human decision made
+  by Apollo staff, never something a tool does on its own.
+- This repository is NOT a GitHub fork. It started private (GitHub does not allow a private
+  fork of a public repo) and became public on 2026-11-18. It is a standalone repo seeded with
+  upstream history up to the v16.0.1 tag, so it does not appear in wled/WLED's fork network.
 - Pass `-R ApolloAutomation/MLED-1` on every gh command that writes.
 - Never push MLED-1 refs to ApolloAutomation/WLED-M1 or any other fork of wled/WLED (that
   publishes them into wled's fork network). Never run `gh repo fork` or
@@ -47,8 +48,8 @@ AGENTS.md and .github/copilot-instructions.md.
   history and breaks the next 3-way merge.
 - Before merging, confirm the tag's commit SHA matches the release on github.com/wled/WLED.
 - On every sync, re-delete any upstream workflow that comes back under .github/workflows/
-  (nightly, release, stale, CI). They burn private-repo Actions minutes, and release.yml
-  fires on any tag push.
+  (nightly, release, stale, CI). They waste Actions runs, release.yml fires on any tag
+  push, and pr-merge.yaml uses pull_request_target, which is unsafe on a public repo.
 - On every sync, update the WLED version in NOTICE and the README header.
 - On every sync, diff esp32dev_8M's inherited lib_deps against the pinned list in
   `[env:apollo_mled1]` and re-pin anything upstream changed (DECISIONS MLED-D8).

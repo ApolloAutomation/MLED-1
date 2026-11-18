@@ -29,10 +29,14 @@ also keeps generic WLED binaries off units unless the user overrides). WLED_REPO
 `ApolloAutomation/MLED-1`, WLED_PRODUCT_NAME and SERVERNAME `Apollo MLED-1`.
 WLED_BRAND stays `WLED`.
 
-### MLED-D5. Standalone private repo, not a GitHub fork
-GitHub forks of public repos are always public. Seeded with upstream history to v16.0.1
-(commit 29b389df) so upstream releases merge as normal 3-way merges. Only `main` is pushed;
-no upstream branches or tags.
+### MLED-D5. Standalone repo, not a GitHub fork; public since 2026-11-18
+GitHub forks of public repos are always public, so the repo was created standalone while it
+was private. Seeded with upstream history to v16.0.1 (commit 29b389df) so upstream releases
+merge as normal 3-way merges. Only `main` is pushed; no upstream branches or tags.
+Made public 2026-11-18 (Justin) after a scan of all Apollo commits, PR text and Actions logs
+found no credentials or personal data. Turned on at the same time: secret scanning with push
+protection, Dependabot alerts, private vulnerability reporting (.github/SECURITY.md), and
+approval before any outside contributor's PR runs CI. Anyone can now fork the repo.
 
 ### MLED-D6. Upstream GitHub automation removed
 Deleted upstream build, nightly, release, stale, test, usermods, wled-ci and pr-merge
@@ -41,14 +45,15 @@ by apollo-mled1-build.yml and an Apollo issue-template config.
 
 ### MLED-D7. Content-creator units, 2026-11-13
 First units were flashed from a local build whose firmware files (platformio.ini env,
-wled00/set.cpp) are identical to this repo's first Apollo commit. Recipients get the
-matching source archive (EUPL-1.2 Art. 5) because the repo is still private.
+wled00/set.cpp) are identical to this repo's first Apollo commit. Recipients got the
+matching source archive (EUPL-1.2 Art. 5) while the repo was private; since 2026-11-18 that
+source is also public at commit c3d61f7d.
 
 ### MLED-D8. Libraries pinned; factory image built in CI
 `[env:apollo_mled1]` restates the inherited esp32dev_8M lib_deps in the same order, with the
 three moving references pinned to what the first builds resolved: AnimatedGIF 1.4.7 (was
 ^1.4.7), ESPAsyncWebServer 39b830c8 (was tag v2.4.2), QuickESPNow 2985a4a6 (was branch
-optional-debug). Upstream maintainers can no longer change Apollo builds without a merge.
+optional-debug), so a given commit always builds from the same library sources.
 On every upstream sync, diff the inherited list (`pio project config`) and re-pin.
 CI also merges the factory image (MLED-1_full_install.bin, bootloader 0x1000, partitions
 0x8000, boot_app0 0xe000, app 0x10000; DIO, 40m, 8MB) and uploads it with SHA256SUMS.txt.
