@@ -61,6 +61,11 @@ AGENTS.md and .github/copilot-instructions.md.
   build on every build. Set `npm_config_cache` only if the default npm cache is not writable.
 - CI is .github/workflows/apollo-mled1-build.yml and builds only `apollo_mled1`. Upstream CI
   references in AGENTS.md and docs/ do not apply here.
+- Releasing: push an annotated tag `v<package.json version>` on a commit on main
+  (`git push origin refs/tags/v16.0.1`, never `--tags`; check `git tag -l` first). The same
+  run creates the release (MLED-1_full_install.bin, WLED_<version>_Apollo_MLED-1.bin,
+  SHA256SUMS.txt) and deploys the web installer through apollo-mled1-pages.yml. Never
+  create releases by hand or with other tag names (DECISIONS MLED-D9, MLED-D10).
 - Keep `WLED_RELEASE_NAME` = `Apollo_MLED-1` forever. WLED's OTA check rejects firmware
   whose release name differs, and the device Auto update and Home Assistant updates match on
   it. After a rename, owners could only update by ticking "Ignore firmware validation".
